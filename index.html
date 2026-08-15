@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Idle-Cozy-Gladiators</title>
+  <meta name="description" content="A sleepy coliseum where glory is a nap between bouts. The sand is warm. The crowd is kind." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23E8B84A'/%3E%3Cpath d='M18 40 L32 16 L46 40 Z' fill='%237A4A28'/%3E%3Ccircle cx='32' cy='42' r='8' fill='%23C45C3E'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="play">
+  <div id="app">
+    <header class="hud">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">🏛</span>
+        <div>
+          <h1>Idle-Cozy-Gladiators</h1>
+          <p class="dayline">
+            <span id="hero-name">Rowan</span>
+            · lv <span id="level-num">1</span>
+            · <span id="season-name">Spring</span>
+            · day <span id="day-num">1</span>
+            · <span id="weather-name">sunny</span>
+            · <span id="rank-name">Newcomer</span>
+            <span class="para-tag hidden" id="paragon-tag">W0</span>
+            <span class="fest-pill" id="fest-pill">festival</span>
+          </p>
+        </div>
+      </div>
+      <div class="hud-stats">
+        <div class="xp-pill" title="Experience">
+          <span class="xp-bar"><span id="xp-fill"></span></span>
+          <span id="xp-label">0 / 16</span>
+        </div>
+        <button class="hp-pill" id="hp-pill" type="button" title="Roster hearts">
+          <span class="hp-bar"><span id="hp-fill"></span></span>
+          <span id="hp-label">32 / 32</span>
+        </button>
+        <button class="mail-btn" id="btn-mail" type="button" title="Letters">
+          ✉ <span id="mail-dot" class="mail-dot hidden"></span>
+        </button>
+        <button class="coin-pill" id="coin-pill" type="button" title="Coppers and wreath math">
+          <span class="coin-dot" aria-hidden="true"></span>
+          <span id="gold">24¢</span>
+        </button>
+        <button class="icon-btn" id="btn-mute" type="button" aria-label="Toggle sound" title="Sound">♪</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="world painted arena" id="world" aria-label="Idle-Cozy-Gladiators">
+        <div id="scene-fade" class="scene-fade" aria-hidden="true"></div>
+        <div class="moon-glow" aria-hidden="true"></div>
+        <div class="sky" id="sky"></div>
+        <div id="ambience" class="ambience" aria-hidden="true">
+          <span class="firefly f1"></span>
+          <span class="firefly f2"></span>
+          <span class="firefly f3"></span>
+          <span class="firefly f4"></span>
+          <span class="firefly f5"></span>
+          <span class="firefly f6"></span>
+          <span class="steam st1"></span>
+          <span class="steam st2"></span>
+          <span class="steam st3"></span>
+          <span class="petal p1"></span>
+          <span class="petal p2"></span>
+          <span class="petal p3"></span>
+          <span class="confetti k1"></span>
+          <span class="confetti k2"></span>
+          <span class="confetti k3"></span>
+        </div>
+        <div id="weather-layer" class="weather-layer" aria-hidden="true"></div>
+        <div id="decor-layer" class="decor-layer" aria-hidden="true"></div>
+        <div id="forage-layer" class="forage-layer"></div>
+        <div id="hotspots" class="hotspots"></div>
+        <div id="walkers" class="walkers" aria-label="Your roster on the sand"></div>
+        <div id="pit" class="pit hidden" aria-live="polite">
+          <div class="pit-floor" aria-hidden="true"></div>
+          <div class="pit-sides">
+            <div class="pit-lane" id="pit-party"></div>
+            <div class="pit-clash" id="pit-clash" aria-hidden="true">✦</div>
+            <div class="pit-lane foe" id="pit-foe"></div>
+          </div>
+          <p class="pit-log" id="pit-log"></p>
+        </div>
+        <div class="trail-hud">
+          <div class="trail-label">
+            <strong id="card-name">Practice yard</strong>
+            <span id="card-sub">bout in a few seconds — just watch</span>
+          </div>
+          <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+            <span id="card-fill"></span>
+          </div>
+          <div class="crowd-line">
+            <span>crowd</span>
+            <div class="bar crowd"><span id="crowd-fill"></span></div>
+          </div>
+          <p class="world-note" id="world-note"></p>
+        </div>
+        <div id="fight" class="fight hidden" aria-live="polite">
+          <div class="fight-foe">
+            <div class="fight-art" id="fight-art"></div>
+            <div class="fight-meta">
+              <strong id="fight-name">A polite dummy</strong>
+              <div class="bar foe"><span id="fight-foe-hp"></span></div>
+            </div>
+          </div>
+          <p id="fight-log"></p>
+        </div>
+        <div id="say" class="say hidden"></div>
+      </section>
+
+      <button type="button" class="settings-fab" id="btn-settings" title="Settings">⚙</button>
+      <button type="button" class="desk-fab" id="btn-desk" title="Open the ludus">Ludus</button>
+
+      <aside class="settings hidden" id="settings" aria-label="Settings">
+        <header class="card-h">
+          <h2>Settings</h2>
+          <p>Sound for the sand. Music starts after you tap once.</p>
+        </header>
+        <label class="set-row"><span>Music</span><input type="checkbox" id="set-music" checked /></label>
+        <label class="set-row"><span>Taps &amp; pings</span><input type="checkbox" id="set-sfx" checked /></label>
+        <label class="set-row"><span>Music volume</span><input type="range" id="set-mvol" min="0" max="100" value="42" /></label>
+        <label class="set-row"><span>Sound volume</span><input type="range" id="set-svol" min="0" max="100" value="70" /></label>
+        <p class="set-label">Music</p>
+        <div id="set-tracks" class="set-tracks"></div>
+        <p class="set-note" id="set-note">Real band marches. Public domain.</p>
+        <button type="button" class="primary-btn" id="btn-close-settings">Back to the sand</button>
+      </aside>
+
+      <aside class="desk" id="desk" aria-label="Ludus">
+        <div class="desk-top">
+          <button type="button" class="primary-btn" id="btn-close-desk">Back to the sand</button>
+          <div class="desk-quick">
+            <button class="ghost-btn" id="btn-scene-arena" type="button">Arena</button>
+            <button class="ghost-btn" id="btn-scene-yard" type="button">Yard</button>
+            <button class="ghost-btn" id="btn-scene-market" type="button">Market</button>
+            <button class="ghost-btn" id="btn-scene-baths" type="button">Baths</button>
+            <button class="ghost-btn" id="btn-collect" type="button" title="Sell the crate for a 1–5% copper profit">Sell crate</button>
+          </div>
+        </div>
+        <nav class="tabs" role="tablist">
+          <button type="button" class="tab on" data-tab="cards">Cards</button>
+          <button type="button" class="tab" data-tab="roster">Roster</button>
+          <button type="button" class="tab" data-tab="hearts">Hearts</button>
+          <button type="button" class="tab" data-tab="pack">Crate</button>
+          <button type="button" class="tab" data-tab="town">Town</button>
+          <button type="button" class="tab" data-tab="journal">Journal</button>
+          <button type="button" class="tab" data-tab="wreath">Wreath</button>
+          <button type="button" class="tab" data-tab="saves">Saves</button>
+        </nav>
+
+        <div id="tab-cards" class="tab-page">
+          <section class="card">
+            <header class="card-h">
+              <h2>Today's card</h2>
+              <p>Pick a bout. The roster walks it on their own and comes home with sand in their sandals.</p>
+            </header>
+            <div id="cards" class="trails"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Gate board</h2>
+              <p>Pippa pins two kindnesses. They reset with the kettle of morning.</p>
+            </header>
+            <div id="errands" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Practice dummy</h2>
+              <p>If you rake the yard, straw applause arrives while you bout.</p>
+            </header>
+            <div id="dummy" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Ticket booth</h2>
+              <p>Vela keeps a tin. Tickets arrive if the crowd likes your manners.</p>
+            </header>
+            <div id="booth" class="shop"></div>
+          </section>
+        </div>
+
+        <div id="tab-roster" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Companions</h2>
+              <p>Nobody bouts well alone. Recruit friends when Idle-Cozy-Gladiators trusts you.</p>
+            </header>
+            <div id="roster" class="party"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Yard pet</h2>
+              <p>A small yes that follows you. They do not fight. They approve.</p>
+            </header>
+            <div id="pets" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Worn things</h2>
+              <p>A cap, a sash, sandals, a charm. Soft armor for a soft sand.</p>
+            </header>
+            <div id="gear" class="shop"></div>
+          </section>
+        </div>
+
+        <div id="tab-hearts" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Your class</h2>
+              <p>The crowd will still call you kindly. The sand hits differently.</p>
+            </header>
+            <div id="class-box" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Roster hearts</h2>
+              <p>Nobody falls down forever. They sit, they sip, they stand up.</p>
+            </header>
+            <div id="vitals" class="party"></div>
+            <div class="desk-quick" style="margin-top:8px">
+              <button class="ghost-btn" id="btn-heal-soup" type="button">Share soup</button>
+              <button class="ghost-btn" id="btn-rest" type="button">Bath rest · 8</button>
+              <button class="ghost-btn" id="btn-camp" type="button">Sleep till morning</button>
+            </div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Habits</h2>
+              <p>Every three levels the sand teaches you a habit.</p>
+            </header>
+            <div id="talents" class="shop"></div>
+          </section>
+        </div>
+
+        <div id="tab-pack" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Crate</h2>
+              <p>Tap a thing to sell one. The stall pays a 1–5% copper profit.</p>
+            </header>
+            <div id="pack" class="pack"></div>
+            <div id="autosell" class="autosell"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Kettle</h2>
+              <p>Cook a little courage before the next card.</p>
+            </header>
+            <div id="recipes" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Workbench</h2>
+              <p>Otto's leftover nails. Cassia's leftover flour. Your leftover patience.</p>
+            </header>
+            <div id="crafts" class="shop"></div>
+          </section>
+        </div>
+
+        <div id="tab-town" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Neighbors</h2>
+              <p>Bring what they asked. Hearts open slowly.</p>
+            </header>
+            <div id="neighbors" class="village"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Market stall</h2>
+              <p>Otto keeps a crate under the olive awning.</p>
+            </header>
+            <div id="shop" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>School</h2>
+              <p>A ludus of your own. Quiet bonuses that stay home.</p>
+            </header>
+            <div id="school" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Trophy shelf</h2>
+              <p>Give Ludo one of each treasure. The shelf remembers, and pays you back slowly.</p>
+            </header>
+            <div id="museum" class="shop"></div>
+          </section>
+        </div>
+
+        <div id="tab-journal" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Sand book</h2>
+              <p id="journal-sub">Bouts taken, letters kept.</p>
+            </header>
+            <div id="journal" class="journal"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Bestiary</h2>
+              <p>Folks you have bowed to on the sand.</p>
+            </header>
+            <div id="bestiary" class="bestiary"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Chapters</h2>
+              <p>Idle-Cozy-Gladiators writes you in, slowly.</p>
+            </header>
+            <div id="story" class="journal"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Stamps</h2>
+              <p>Little yeses the journal keeps.</p>
+            </header>
+            <div id="stamps" class="bestiary"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Memories</h2>
+              <p>Days the sand asked you to keep.</p>
+            </header>
+            <div id="memories" class="journal"></div>
+          </section>
+        </div>
+
+        <div id="tab-wreath" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Wreath heat</h2>
+              <p>Hang it when the sand has been long enough. The town forgets your crate. It keeps the math.</p>
+            </header>
+            <div id="wreath-score" class="lantern-score"></div>
+            <button type="button" class="primary-btn" id="btn-kindle">Hang the wreath</button>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Stat sheet</h2>
+              <p>Soft-capped. More ranks still help, just a little less each time.</p>
+            </header>
+            <div id="stat-sheet" class="stat-grid"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Wreath tree</h2>
+              <p>Spend heat. These ranks survive every hanging.</p>
+            </header>
+            <div id="paragon-tree" class="shop"></div>
+          </section>
+        </div>
+
+        <div id="tab-saves" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Local hearths</h2>
+              <p>Each profile is a separate Idle-Cozy-Gladiators hearth on this computer. Switching saves the one you're in first.</p>
+            </header>
+            <div class="profile-new">
+              <input id="profile-name" type="text" maxlength="24" placeholder="Name a new keeper" />
+              <button type="button" class="buy-btn" id="btn-new-profile">New hearth</button>
+            </div>
+            <div id="profiles" class="profiles"></div>
+            <button type="button" class="danger-btn" id="btn-reset">Reset this hearth</button>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Debug</h2>
+              <p>Cheats for testing. They only touch the active profile.</p>
+            </header>
+            <div id="debug" class="debug"></div>
+          </section>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div id="fx" class="fx" aria-hidden="true"></div>
+  <div id="toast" class="toast hidden"></div>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div id="modal-portrait" class="modal-portrait hidden"></div>
+      <h2 id="modal-title"></h2>
+      <p id="modal-body"></p>
+      <div id="modal-actions" class="modal-actions">
+        <button type="button" id="modal-ok" class="primary-btn">Come in</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener("error", function (e) {
+      var n = document.getElementById("boot-error");
+      if (!n) {
+        n = document.createElement("div");
+        n.id = "boot-error";
+        n.style.cssText = "position:fixed;left:12px;right:12px;bottom:88px;z-index:9999;background:#2a2118;color:#f6edd8;padding:12px 14px;border-radius:14px;font:800 14px Nunito,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.35)";
+        document.body.appendChild(n);
+      }
+      n.textContent = "A small snag: " + (e.message || "unknown");
+    });
+  </script>
+  <script src="game.js"></script>
+</body>
+</html>
