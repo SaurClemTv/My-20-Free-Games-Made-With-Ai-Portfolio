@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Idle-Cozy-Farmer</title>
+  <meta name="description" content="Idle-Cozy-Farmer — a sleepy hill farm. The soil works while the kettle sings." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23E8B84A'/%3E%3Ccircle cx='32' cy='40' r='10' fill='%237A4A28'/%3E%3Cpath d='M22 28 C28 8 44 10 42 28' fill='%237BA17D'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="play">
+  <div id="app">
+    <header class="hud">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">🌱</span>
+        <div>
+          <h1>Idle-Cozy-Farmer</h1>
+          <p class="dayline">
+            year <span id="year-num">1</span>
+            · <span id="season-name">Spring</span>
+            · day <span id="day-num">1</span>
+            · <span id="weather">sunny</span>
+            <span id="fest-line"></span>
+          </p>
+        </div>
+      </div>
+      <div class="hud-stats">
+        <button class="mail-btn" id="btn-mail" type="button" title="Mail">
+          ✉ <span id="mail-dot" class="mail-dot hidden"></span>
+        </button>
+        <button class="coin-pill" id="coin-pill" type="button" title="The ledger">
+          <span class="coin-dot" aria-hidden="true"></span>
+          <span id="coins">400</span>
+        </button>
+        <button class="tax-pill" id="tax-pill" type="button" title="Wages and tax paid">wages <span id="wage-num">0</span></button>
+        <button class="star-pill" id="star-pill" type="button" title="Paragon stars">★ <span id="star-num">0</span></button>
+        <button class="icon-btn" id="btn-mute" type="button" aria-label="Toggle sound" title="Sound">♪</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="world painted" id="world" aria-label="Your farm">
+        <div class="sky" id="sky"></div>
+        <div id="ambience" class="ambience" aria-hidden="true">
+          <span class="firefly f1"></span>
+          <span class="firefly f2"></span>
+          <span class="firefly f3"></span>
+          <span class="firefly f4"></span>
+          <span class="firefly f5"></span>
+          <span class="firefly f6"></span>
+          <span class="bee b1"></span>
+          <span class="bee b2"></span>
+          <span class="butterfly u1"></span>
+          <span class="butterfly u2"></span>
+          <span class="smoke s1"></span>
+          <span class="smoke s2"></span>
+          <span class="smoke s3"></span>
+          <span class="petal p1"></span>
+          <span class="petal p2"></span>
+          <span class="petal p3"></span>
+          <span class="petal p4"></span>
+          <span class="petal p5"></span>
+          <span class="sparkle k1"></span>
+          <span class="sparkle k2"></span>
+          <span class="sparkle k3"></span>
+          <span class="star n1"></span>
+          <span class="star n2"></span>
+          <span class="star n3"></span>
+          <span class="star n4"></span>
+        </div>
+        <div id="weather-layer" class="weather-layer" aria-hidden="true"></div>
+        <div id="hotspots" class="hotspots"></div>
+        <div id="paddock" class="paddock" aria-label="Animal paddock"></div>
+        <div id="hands" class="hands" aria-hidden="true"></div>
+        <div id="forage-layer" class="forage-layer"></div>
+        <div id="decor-layer" class="decor-layer" aria-hidden="true"></div>
+        <div class="scene">
+          <div class="field-wrap">
+            <div class="field-bar" id="field-bar"></div>
+            <div id="field" class="field" role="grid" aria-label="Garden plots"></div>
+          </div>
+        </div>
+        <div id="say" class="say hidden"></div>
+        <p class="world-note" id="world-note"></p>
+      </section>
+
+      <div class="side-fabs" id="side-fabs">
+        <button type="button" class="settings-fab" id="btn-settings" title="Settings">Settings</button>
+        <button type="button" class="desk-fab" id="btn-desk" title="Open setup">Desk</button>
+      </div>
+      <div id="settings-panel" class="settings-panel hidden" role="dialog" aria-label="Settings">
+        <h2>Settings</h2>
+        <label class="set-row">
+          <span>Farming music</span>
+          <button type="button" class="toggle" id="set-music" aria-pressed="true"></button>
+        </label>
+        <label class="set-row">
+          <span>Sound effects</span>
+          <button type="button" class="toggle on" id="set-sfx" aria-pressed="true"></button>
+        </label>
+        <label class="set-row">
+          <span>Music volume</span>
+          <input id="set-vol" type="range" min="0" max="100" value="40" />
+        </label>
+        <p class="set-label">Track</p>
+        <div id="set-tracks" class="set-tracks"></div>
+        <button type="button" class="ghost-btn" id="set-close">Close</button>
+      </div>
+
+      <aside class="desk" id="desk" aria-label="Farm desk">
+        <div class="desk-top">
+          <button type="button" class="primary-btn" id="btn-close-desk">Back to farm</button>
+          <div class="desk-quick">
+            <button class="ghost-btn" id="btn-run" type="button">Run farm</button>
+            <button class="ghost-btn" id="btn-collect" type="button">Gather all</button>
+            <button class="ghost-btn" id="btn-sell" type="button">Sell pantry</button>
+          </div>
+        </div>
+        <nav class="tabs" role="tablist">
+          <button type="button" class="tab on" data-tab="crew">Crew</button>
+          <button type="button" class="tab" data-tab="garden">Garden</button>
+          <button type="button" class="tab" data-tab="kitchen">Kitchen</button>
+          <button type="button" class="tab" data-tab="village">Village</button>
+          <button type="button" class="tab" data-tab="journal">Journal</button>
+          <button type="button" class="tab" data-tab="paragon">Paragon</button>
+          <button type="button" class="tab" data-tab="saves">Saves</button>
+        </nav>
+
+        <div id="tab-crew" class="tab-page">
+          <section class="card">
+            <header class="card-h">
+              <h2>Hired hands</h2>
+              <p>They work so you don't have to. You pay a wage. Sales return what you spent plus pennies: crew 1–2%, your own hands 1–5% of the loot. A heavy grind.</p>
+            </header>
+            <div id="crew" class="crew"></div>
+            <button type="button" class="primary-btn crew-run" id="btn-run-desk">Run the whole farm once</button>
+            <p class="lesson" id="crew-lesson">Hand work pays 1–5% pennies on what you spent. Crew sales pay a bare 1–2%. A heavy grind.</p>
+          </section>
+        </div>
+
+        <div id="tab-garden" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Seed tin</h2>
+              <p>Season, soil, water, and rest decide grade: poor, fair, fine, prize. Prize leans the 5% penny cap. Poor stays at 1%.</p>
+            </header>
+            <div id="seed-cats" class="cats"></div>
+            <div id="seeds" class="seed-row"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Barn nook</h2>
+              <p>Each kind has a stall. Feed them from the pantry. Mood makes produce sooner and finer.</p>
+            </header>
+            <div id="barn" class="barn"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Market cart</h2>
+              <p>Tools, land, and a little magic.</p>
+            </header>
+            <div id="shop" class="shop"></div>
+          </section>
+        </div>
+
+        <div id="tab-kitchen" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Pantry</h2>
+              <p>Harvests wait here until you sell or cook.</p>
+            </header>
+            <div id="pantry" class="pantry"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Recipes</h2>
+              <p>Cook to fill the pantry, or serve a meal for a day-long farm buff. Two grain at the mill become flour.</p>
+            </header>
+            <div id="recipes" class="shop"></div>
+          </section>
+        </div>
+
+        <div id="tab-village" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Neighbors</h2>
+              <p>Bring what they asked. Hearts open slowly. Five hearts unlock a real perk. The almanac keeps the week honest.</p>
+            </header>
+            <div id="village" class="village"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Yard goods</h2>
+              <p>Pretty things that quietly help. The bench is for sitting. The birdbath is for birds with opinions.</p>
+            </header>
+            <div id="decor-shop" class="shop"></div>
+          </section>
+        </div>
+
+        <div id="tab-journal" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Farm book</h2>
+              <p id="journal-sub">Crops tasted, letters kept, mastery earned, fairs remembered.</p>
+            </header>
+            <div id="journal" class="journal"></div>
+          </section>
+        </div>
+
+        <div id="tab-paragon" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Paragon tree</h2>
+              <p>Fold a long farm into stars. Spend them on gifts the next farm remembers. Prestige earns stars and restarts. Restart keeps the tree without new stars. Reset on Saves wipes the tree too.</p>
+            </header>
+            <div id="paragon"></div>
+          </section>
+        </div>
+
+        <div id="tab-saves" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Local farms</h2>
+              <p>Each profile is a separate farm on this computer. Switching saves the one you’re in first. Reset wipes this farm and its paragon tree. Prestige and restart live under Paragon.</p>
+            </header>
+            <div class="profile-new">
+              <input id="profile-name" type="text" maxlength="24" placeholder="Name a new farm" />
+              <button type="button" class="buy-btn" id="btn-new-profile">New farm</button>
+            </div>
+            <div id="profiles" class="profiles"></div>
+            <div class="profile-new">
+              <button type="button" class="buy-btn" id="btn-export">Download this farm</button>
+              <label class="buy-btn import-lab">Load a farm
+                <input id="import-save" type="file" accept="application/json,.json" hidden />
+              </label>
+            </div>
+            <button type="button" class="danger-btn" id="btn-reset">Reset this farm</button>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Debug</h2>
+              <p>Cheats and tools for testing. They only touch the active profile.</p>
+            </header>
+            <div id="debug" class="debug"></div>
+          </section>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div id="boot-err" class="boot-err hidden" role="alert"></div>
+  <div id="fx" class="fx" aria-hidden="true"></div>
+  <div id="toast" class="toast hidden"></div>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div id="modal-portrait" class="modal-portrait hidden"></div>
+      <h2 id="modal-title"></h2>
+      <p id="modal-body"></p>
+      <div id="modal-actions" class="modal-actions">
+        <button type="button" id="modal-ok" class="primary-btn">Come in</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.onerror = function (msg, src, line) {
+      var el = document.getElementById("boot-err");
+      if (!el) return;
+      el.classList.remove("hidden");
+      el.textContent = "The farm stumbled: " + msg + (line ? " (line " + line + ")" : "");
+    };
+  </script>
+  <script src="game.js"></script>
+</body>
+</html>
