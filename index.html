@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Idle-Cozy-Rpg game</title>
+  <meta name="description" content="Idle-Cozy-Rpg game — a sleepy valley where adventuring is a stroll. Your party rambles while the kettle sings." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23E8B84A'/%3E%3Cpath d='M20 38 C22 18 44 16 44 36 C36 28 28 30 20 38Z' fill='%236B8F71'/%3E%3Ccircle cx='32' cy='42' r='8' fill='%237A4A28'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="play">
+  <div id="app">
+    <header class="hud">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">🏮</span>
+        <div>
+          <button type="button" class="settings-link" id="btn-settings-brand">Settings</button>
+          <h1>Idle-Cozy-Rpg</h1>
+          <p class="dayline">
+            <span id="hero-name">Rowan</span>
+            · lv <span id="level-num">1</span>
+            · <span id="season-name">Spring</span>
+            · day <span id="day-num">1</span>
+            · <span id="weather-name">sunny</span>
+            · <span id="rank-name">Newcomer</span>
+            <span class="para-tag hidden" id="paragon-tag">P0</span>
+            <span class="fest-pill" id="fest-pill">festival</span>
+          </p>
+        </div>
+      </div>
+      <div class="hud-stats">
+        <div class="xp-pill" title="Experience">
+          <span class="xp-bar"><span id="xp-fill"></span></span>
+          <span id="xp-label">0 / 16</span>
+        </div>
+        <button class="hp-pill" id="hp-pill" type="button" title="Party hearts">
+          <span class="hp-bar"><span id="hp-fill"></span></span>
+          <span id="hp-label">28 / 28</span>
+        </button>
+        <button class="mail-btn" id="btn-mail" type="button" title="Letters">
+          ✉ <span id="mail-dot" class="mail-dot hidden"></span>
+        </button>
+        <button class="coin-pill" id="coin-pill" type="button" title="Pennies and lantern math">
+          <span class="coin-dot" aria-hidden="true"></span>
+          <span id="gold">24¢</span>
+        </button>
+        <button class="icon-btn" id="btn-mute" type="button" aria-label="Toggle sound" title="Sound">♪</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="world painted town" id="world" aria-label="The valley">
+        <video id="scene-loop" class="scene-loop" muted loop playsinline autoplay preload="metadata"></video>
+        <div id="scene-fade" class="scene-fade" aria-hidden="true"></div>
+        <div class="moon-glow" aria-hidden="true"></div>
+        <div class="sky" id="sky"></div>
+        <div id="ambience" class="ambience" aria-hidden="true">
+          <span class="firefly f1"></span>
+          <span class="firefly f2"></span>
+          <span class="firefly f3"></span>
+          <span class="firefly f4"></span>
+          <span class="firefly f5"></span>
+          <span class="firefly f6"></span>
+          <span class="firefly f7"></span>
+          <span class="steam st1"></span>
+          <span class="steam st2"></span>
+          <span class="steam st3"></span>
+          <span class="drift-cloud c1"></span>
+          <span class="drift-cloud c2"></span>
+          <span class="drift-cloud c3"></span>
+          <span class="bird b1"></span>
+          <span class="bird b2"></span>
+        </div>
+        <div id="weather-layer" class="weather-layer" aria-hidden="true"></div>
+        <div id="decor-layer" class="decor-layer" aria-hidden="true"></div>
+        <div id="forage-layer" class="forage-layer"></div>
+        <div id="hotspots" class="hotspots"></div>
+        <div id="walkers" class="walkers" aria-label="Your party on the trail"></div>
+        <div id="foe-stage" class="foe-stage hidden" aria-live="polite"></div>
+        <div class="trail-hud">
+          <div class="trail-label">
+            <strong id="trail-name">Meadow Path</strong>
+            <span id="trail-sub">wandering kindly</span>
+          </div>
+          <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+            <span id="trail-fill"></span>
+          </div>
+          <p class="world-note" id="world-note"></p>
+          <div class="trail-actions">
+            <button type="button" class="ghost-btn paths-btn" id="btn-more-trails">More trails</button>
+            <button type="button" class="ghost-btn paths-btn" id="btn-next-trail">Next path</button>
+          </div>
+        </div>
+        <div id="fight" class="fight hidden" aria-live="polite">
+          <div class="fight-foe">
+            <div class="fight-art" id="fight-art"></div>
+            <div class="fight-meta">
+              <strong id="fight-name">A polite slime</strong>
+              <div class="bar foe"><span id="fight-foe-hp"></span></div>
+            </div>
+          </div>
+          <p id="fight-log"></p>
+        </div>
+        <div id="say" class="say hidden"></div>
+      </section>
+
+      <div class="fab-stack" id="fab-stack">
+        <button type="button" class="desk-fab" id="btn-desk" title="Open satchel">Satchel</button>
+        <button type="button" class="desk-fab settings-fab" id="btn-settings-fab" title="Settings">Settings</button>
+      </div>
+
+      <aside class="desk" id="desk" aria-label="Satchel">
+        <div class="desk-top">
+          <button type="button" class="primary-btn" id="btn-close-desk">Back to the valley</button>
+          <div class="desk-quick">
+            <button class="ghost-btn" id="btn-scene-town" type="button">Town</button>
+            <button class="ghost-btn" id="btn-scene-mill" type="button">Mill</button>
+            <button class="ghost-btn" id="btn-scene-lib" type="button">Library</button>
+            <button class="ghost-btn" id="btn-scene-trail" type="button">Trail</button>
+            <button class="ghost-btn" id="btn-desk-paths" type="button">More trails</button>
+            <button class="ghost-btn" id="btn-collect" type="button" title="Sell the satchel for a 1–5% penny profit">Sell pack</button>
+          </div>
+        </div>
+        <nav class="tabs" role="tablist">
+          <button type="button" class="tab on" data-tab="trails">Trails</button>
+          <button type="button" class="tab" data-tab="party">Party</button>
+          <button type="button" class="tab" data-tab="fight">Hearts</button>
+          <button type="button" class="tab" data-tab="pack">Pack</button>
+          <button type="button" class="tab" data-tab="town">Town</button>
+          <button type="button" class="tab" data-tab="journal">Journal</button>
+          <button type="button" class="tab" data-tab="lantern">Lantern</button>
+          <button type="button" class="tab" data-tab="help">Help</button>
+          <button type="button" class="tab" data-tab="saves">Saves</button>
+        </nav>
+
+        <div id="tab-trails" class="tab-page">
+          <section class="card">
+            <header class="card-h">
+              <h2>Today's blessing</h2>
+              <p id="bless-sub">The day picks two paths to favor.</p>
+            </header>
+            <div id="blessing" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Where to ramble</h2>
+              <p id="trails-sub">Open Satchel → Trails. Ramble an open path. Locked rows are the next ones as you level.</p>
+            </header>
+            <div id="trails" class="trails"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Day board</h2>
+              <p>Wren pins two kindnesses. They reset with the kettle of morning.</p>
+            </header>
+            <div id="errands" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Doorstep hive</h2>
+              <p>If the hollow likes you, honey arrives while you ramble.</p>
+            </header>
+            <div id="hive" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Mill pond</h2>
+              <p>A line in the water. Fish arrive if you have been kind to the brook.</p>
+            </header>
+            <div id="pond" class="shop"></div>
+          </section>
+        </div>
+
+        <div id="tab-party" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Companions</h2>
+              <p>Nobody rambles well alone. Recruit friends when the valley trusts you.</p>
+            </header>
+            <div id="party" class="party"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Hearth pet</h2>
+              <p>A small yes that follows you. They do not fight. They approve.</p>
+            </header>
+            <div id="pets" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Worn things</h2>
+              <p>A hat, a cloak, boots, a charm. Soft armor for a soft world.</p>
+            </header>
+            <div id="gear" class="shop"></div>
+          </section>
+        </div>
+
+        <div id="tab-fight" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Your class</h2>
+              <p>The valley will still call you kindly. The path hits differently.</p>
+            </header>
+            <div id="class-box" class="shop"></div>
+            <div id="class-ranks" class="shop" style="margin-top:8px"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Stance</h2>
+              <p>How the party meets a scuffle. Free to change between loops.</p>
+            </header>
+            <div id="stances" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Party hearts</h2>
+              <p>Nobody falls down forever. They sit, they sip, they stand up.</p>
+            </header>
+            <div id="vitals" class="party"></div>
+            <div class="desk-quick" style="margin-top:8px">
+              <button class="ghost-btn" id="btn-heal-biscuit" type="button">Share a biscuit</button>
+              <button class="ghost-btn" id="btn-rest" type="button">Inn rest · 8</button>
+              <button class="ghost-btn" id="btn-camp" type="button">Camp till morning</button>
+            </div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Talents</h2>
+              <p>Every three levels the path teaches you a habit.</p>
+            </header>
+            <div id="talents" class="shop"></div>
+          </section>
+        </div>
+
+        <div id="tab-pack" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Satchel</h2>
+              <p>Tap a thing to sell one. The stall pays a 1–5% penny profit.</p>
+            </header>
+            <div id="pack" class="pack"></div>
+            <div id="autosell" class="autosell"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Kettle</h2>
+              <p>Cook a little courage before the next loop.</p>
+            </header>
+            <div id="recipes" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Workshop</h2>
+              <p>Cob's leftover nails. Bram's leftover flour. Your leftover patience.</p>
+            </header>
+            <div id="crafts" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Temper</h2>
+              <p>Warm a worn thing with lantern oil. Ranks reset when you kindle. Echoes do not.</p>
+            </header>
+            <div id="temper" class="shop"></div>
+          </section>
+        </div>
+
+        <div id="tab-town" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Neighbors</h2>
+              <p>Bring what they asked. Hearts open slowly.</p>
+            </header>
+            <div id="neighbors" class="village"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Market stall</h2>
+              <p>Cob keeps a crate under the green awning.</p>
+            </header>
+            <div id="shop" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Cottage</h2>
+              <p>A hearth of your own. Quiet bonuses that stay home.</p>
+            </header>
+            <div id="cottage" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Valley cabinet</h2>
+              <p>Give Iris one of each treasure. The shelves remember, and pay you back slowly.</p>
+            </header>
+            <div id="museum" class="shop"></div>
+          </section>
+        </div>
+
+        <div id="tab-journal" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Trail book</h2>
+              <p id="journal-sub">Walks taken, letters kept.</p>
+            </header>
+            <div id="journal" class="journal"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Bestiary</h2>
+              <p>Folks you have nodded to on the path.</p>
+            </header>
+            <div id="bestiary" class="bestiary"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Chapters</h2>
+              <p>The valley writes you in, slowly.</p>
+            </header>
+            <div id="story" class="journal"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Stamps</h2>
+              <p>Little yeses the journal keeps.</p>
+            </header>
+            <div id="stamps" class="bestiary"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Memories</h2>
+              <p>Days the valley asked you to keep.</p>
+            </header>
+            <div id="memories" class="journal"></div>
+          </section>
+        </div>
+
+        <div id="tab-lantern" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Lantern heat</h2>
+              <p>Kindle when the path has been long enough. The valley forgets your pockets. It keeps the math.</p>
+            </header>
+            <div id="lantern-score" class="lantern-score"></div>
+            <button type="button" class="primary-btn" id="btn-kindle">Kindle the lantern</button>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Lantern aspect</h2>
+              <p>A color for this walk. First pick is free at level 8, or after a kindle. Changing costs one oil.</p>
+            </header>
+            <div id="aspects" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Porch rite</h2>
+              <p>Pour a bottle of oil. Five loops of haste, mend, and luck. The moths keep the books.</p>
+            </header>
+            <div id="rite-box" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Lantern book</h2>
+              <p>Spend 2 pages and 1 oil to study a trail. The bonus survives kindle.</p>
+            </header>
+            <div id="codex" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Stat sheet</h2>
+              <p>Soft-capped. More ranks still help, just a little less each time.</p>
+            </header>
+            <div id="stat-sheet" class="stat-grid"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Paragon tree</h2>
+              <p>Spend heat. These ranks survive every kindle.</p>
+            </header>
+            <div id="paragon-tree" class="shop"></div>
+          </section>
+        </div>
+
+        <div id="tab-help" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Idle-Cozy-Rpg</h2>
+              <p>Everything the valley is doing, written down so you can read it.</p>
+            </header>
+            <div id="help-book" class="help-book"></div>
+          </section>
+        </div>
+
+        <div id="tab-saves" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Local hearths</h2>
+              <p>Each profile is a separate valley on this computer. Switching saves the one you're in first.</p>
+            </header>
+            <div class="profile-new">
+              <input id="profile-name" type="text" maxlength="24" placeholder="Name a new wanderer" />
+              <button type="button" class="buy-btn" id="btn-new-profile">New hearth</button>
+            </div>
+            <div id="profiles" class="profiles"></div>
+            <button type="button" class="danger-btn" id="btn-reset">Reset this hearth</button>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Debug</h2>
+              <p>Cheats for testing. They only touch the active profile.</p>
+            </header>
+            <div id="debug" class="debug"></div>
+          </section>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div id="fx" class="fx" aria-hidden="true"></div>
+  <div id="toast" class="toast hidden"></div>
+
+  <div id="settings" class="settings hidden" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div class="settings-card">
+      <h2 id="settings-title">Settings</h2>
+      <p class="settings-lead">Music, sound, and a few quiet knobs. The valley remembers these.</p>
+      <label class="set-row"><span>Music</span><input type="checkbox" id="set-music" /></label>
+      <label class="set-row"><span>Music volume</span><input type="range" id="set-music-vol" min="0" max="100" /></label>
+      <div class="set-block">
+        <strong>A tune for the walk</strong>
+        <p class="settings-foot" style="margin:0 0 8px">Fourteen cozy pieces. Tap one. Shuffle wanders after a few loops.</p>
+        <div id="set-songs" class="set-songs"></div>
+        <button type="button" class="ghost-btn" id="set-next-song" style="margin-top:8px;color:#4a3320;background:#efe2c4;width:100%">Next tune</button>
+      </div>
+      <label class="set-row"><span>Shuffle the playlist</span><input type="checkbox" id="set-shuffle" /></label>
+      <label class="set-row"><span>Extra bells</span><input type="checkbox" id="set-bells" /></label>
+      <label class="set-row"><span>Soft pad underneath</span><input type="checkbox" id="set-pad" /></label>
+      <label class="set-row"><span>Scuffle sounds</span><input type="checkbox" id="set-sfx" /></label>
+      <label class="set-row"><span>Sound volume</span><input type="range" id="set-sfx-vol" min="0" max="100" /></label>
+      <div class="set-block">
+        <strong>Let the valley pick the tune</strong>
+        <select id="set-follow" class="set-select">
+          <option value="pick">Stay on the song I chose</option>
+          <option value="day">Follow morning, dusk, and night</option>
+          <option value="season">Follow the season</option>
+          <option value="trail">Follow the path underfoot</option>
+        </select>
+      </div>
+      <div class="set-block">
+        <strong>Scuffle pace</strong>
+        <select id="set-pace" class="set-select">
+          <option value="slow">Slow — easier to watch</option>
+          <option value="cozy">Cozy — the usual sit-down</option>
+          <option value="brisk">Brisk — they bow sooner</option>
+        </select>
+      </div>
+      <label class="set-row"><span>Calm motion</span><input type="checkbox" id="set-still" /></label>
+      <label class="set-row"><span>Watch fights on the trail</span><input type="checkbox" id="set-watch" /></label>
+      <label class="set-row"><span>Damage numbers</span><input type="checkbox" id="set-dmg" /></label>
+      <label class="set-row"><span>Always show names</span><input type="checkbox" id="set-names" /></label>
+      <label class="set-row"><span>Larger type</span><input type="checkbox" id="set-type" /></label>
+      <label class="set-row"><span>Ask before kindling</span><input type="checkbox" id="set-kindle" /></label>
+      <p class="settings-foot">Calm motion stills butterflies, moths, and the walking bob. Fights still lunge. The valley remembers every knob.</p>
+      <button type="button" class="primary-btn" id="settings-close">Close</button>
+    </div>
+  </div>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div id="modal-portrait" class="modal-portrait hidden"></div>
+      <h2 id="modal-title"></h2>
+      <p id="modal-body"></p>
+      <div id="modal-actions" class="modal-actions">
+        <button type="button" id="modal-ok" class="primary-btn">Come in</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
