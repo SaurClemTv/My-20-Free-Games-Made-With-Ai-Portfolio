@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Idle Cozy Fishing</title>
+  <meta name="description" content="Idle Cozy Fishing — a sleepy dock where the fish come when they are ready." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%2378B7C5'/%3E%3Cpath d='M14 36 C24 28 40 28 50 36 C40 44 24 44 14 36Z' fill='%232F6B7A'/%3E%3Ccircle cx='46' cy='34' r='3' fill='%23F4E6C8'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="play">
+  <div id="app">
+    <header class="hud">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">🎣</span>
+        <div>
+          <h1>Idle Cozy Fishing</h1>
+          <p class="dayline">
+            <span id="hero-name">Rowan</span>
+            · <span id="craft-name">Dockhand</span>
+            · year <span id="year-num">1</span>
+            · <span id="season-name">Spring</span>
+            · day <span id="day-num">1</span>
+            · <span id="weather">calm</span>
+            · <span id="tide-name">slack</span>
+            · <span id="moon-name">waxing</span>
+            <span id="fest-line"></span>
+          </p>
+        </div>
+      </div>
+      <div class="hud-stats">
+        <button class="mail-btn" id="btn-mail" type="button" title="Mail">
+          ✉ <span id="mail-dot" class="mail-dot hidden"></span>
+        </button>
+        <button class="coin-pill" id="coin-pill" type="button" title="The ledger">
+          <span class="coin-dot" aria-hidden="true"></span>
+          <span id="coins">240</span>
+        </button>
+        <button class="tax-pill" id="tax-pill" type="button" title="Wages paid">wages <span id="wage-num">0</span></button>
+        <button class="star-pill" id="star-pill" type="button" title="Paragon stars">★ <span id="star-num">0</span></button>
+        <button class="icon-btn" id="btn-mute" type="button" aria-label="Toggle sound" title="Sound">♪</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="world painted" id="world" aria-label="Your harbor">
+        <div class="sky" id="sky"></div>
+        <div id="ambience" class="ambience" aria-hidden="true">
+          <span class="gull g1"></span>
+          <span class="gull g2"></span>
+          <span class="gull g3"></span>
+          <span class="ripple r1"></span>
+          <span class="ripple r2"></span>
+          <span class="ripple r3"></span>
+          <span class="sparkle k1"></span>
+          <span class="sparkle k2"></span>
+          <span class="sparkle k3"></span>
+          <span class="sparkle k4"></span>
+          <span class="firefly f1"></span>
+          <span class="firefly f2"></span>
+          <span class="firefly f3"></span>
+          <span class="star n1"></span>
+          <span class="star n2"></span>
+          <span class="star n3"></span>
+          <span class="star n4"></span>
+        </div>
+        <div id="weather-layer" class="weather-layer" aria-hidden="true"></div>
+        <div id="hotspots" class="hotspots"></div>
+        <div id="forage-layer" class="forage-layer"></div>
+        <div id="decor-layer" class="decor-layer" aria-hidden="true"></div>
+        <div id="school" class="school" aria-hidden="true"></div>
+        <div id="fisher" class="fisher" title="You on the dock"></div>
+        <div class="scene">
+          <div class="field-wrap">
+            <div class="field-bar" id="field-bar"></div>
+            <div id="field" class="field" role="grid" aria-label="Fishing slips"></div>
+          </div>
+        </div>
+        <div id="catch" class="catch hidden" aria-live="polite">
+          <div class="catch-art" id="catch-art"></div>
+          <div class="catch-meta">
+            <strong id="catch-name">A kind minnow</strong>
+            <p id="catch-log"></p>
+          </div>
+        </div>
+        <div id="say" class="say hidden"></div>
+        <p class="world-note" id="world-note"></p>
+      </section>
+
+      <button type="button" class="set-fab" id="btn-settings" title="Settings">Settings</button>
+      <button type="button" class="desk-fab" id="btn-desk" title="Open tackle desk">Desk</button>
+
+      <aside id="settings" class="settings hidden" aria-label="Settings">
+        <header class="set-head">
+          <h2>Settings</h2>
+          <button type="button" class="ghost-btn" id="btn-close-settings">Close</button>
+        </header>
+        <nav class="set-nav" role="tablist">
+          <button type="button" class="cat on" data-set="sound">Sound</button>
+          <button type="button" class="cat" data-set="dock">Dock</button>
+          <button type="button" class="cat" data-set="play">Play</button>
+        </nav>
+        <div id="set-page-sound" class="set-page">
+        <section class="set-block">
+          <h3>Sound</h3>
+          <div class="set-row">
+            <span>Master</span>
+            <button type="button" class="toggle" id="set-master" aria-label="Master sound"></button>
+          </div>
+          <div class="set-row">
+            <span>Music</span>
+            <button type="button" class="toggle" id="set-music" aria-label="Music"></button>
+          </div>
+          <div class="set-row">
+            <span>Sounds</span>
+            <button type="button" class="toggle" id="set-sfx" aria-label="Sound effects"></button>
+          </div>
+          <label class="set-vol">Music volume
+            <input id="set-mvol" type="range" min="0" max="100" value="42" />
+          </label>
+          <label class="set-vol">Sound volume
+            <input id="set-svol" type="range" min="0" max="100" value="55" />
+          </label>
+          <div class="set-row">
+            <span>Gulls & drips</span>
+            <button type="button" class="toggle" id="set-gulls" aria-label="Ambience"></button>
+          </div>
+        </section>
+        <section class="set-block">
+          <h3>Harbor radio</h3>
+          <p class="lesson">Cozy fishing music, made on the dock. It stays with the game offline.</p>
+          <div class="set-row">
+            <span>Follow weather</span>
+            <button type="button" class="toggle" id="set-autotrack" aria-label="Follow weather"></button>
+          </div>
+          <label class="set-vol">Water in the mix
+            <input id="set-water" type="range" min="0" max="200" value="100" />
+          </label>
+          <label class="set-vol">Tempo
+            <input id="set-tempo" type="range" min="70" max="130" value="100" />
+          </label>
+          <div id="set-tracks" class="set-tracks"></div>
+          <button type="button" class="ghost-btn" id="set-radio-reset" style="margin-top:8px;color:#2a2016;background:#efe2c4">Restore radio</button>
+        </section>
+        </div>
+        <div id="set-page-dock" class="set-page hidden">
+        <section class="set-block">
+          <h3>The dock</h3>
+          <label class="set-vol">Your name
+            <input id="set-name" type="text" maxlength="24" placeholder="Rowan" />
+          </label>
+          <div class="set-row">
+            <span>Catch cards</span>
+            <button type="button" class="toggle" id="set-cards" aria-label="Catch cards"></button>
+          </div>
+          <div class="set-row">
+            <span>Fisher on the pier</span>
+            <button type="button" class="toggle" id="set-fisher" aria-label="Show fisher"></button>
+          </div>
+          <div class="set-row">
+            <span>Passing fish</span>
+            <button type="button" class="toggle" id="set-school" aria-label="Passing fish"></button>
+          </div>
+          <div class="set-row">
+            <span>Calm motion</span>
+            <button type="button" class="toggle" id="set-calm" aria-label="Reduce motion"></button>
+          </div>
+          <div class="set-row">
+            <span>Moon in the dayline</span>
+            <button type="button" class="toggle" id="set-moonhud" aria-label="Moon in HUD"></button>
+          </div>
+          <div class="set-row">
+            <span>World note</span>
+            <button type="button" class="toggle" id="set-note" aria-label="World note"></button>
+          </div>
+          <label class="set-vol">The cat's name
+            <input id="set-cat" type="text" maxlength="16" placeholder="Miso" />
+          </label>
+          <label class="set-vol">The little boat's name
+            <input id="set-boatname" type="text" maxlength="20" placeholder="Kindling" />
+          </label>
+        </section>
+        </div>
+        <div id="set-page-play" class="set-page hidden">
+        <section class="set-block">
+          <h3>How you play</h3>
+          <div class="set-row">
+            <span>Catch & release</span>
+            <button type="button" class="toggle" id="set-release" aria-label="Catch and release"></button>
+          </div>
+          <p class="lesson">Released fish go home. Stock and mastery stay. The creel stays empty.</p>
+          <label class="set-vol">Watch pace
+            <select id="set-watch">
+              <option value="slow">Slow — one catch at a time, with a breath</option>
+              <option value="normal" selected>Normal</option>
+              <option value="quick">Quick — the dock hurries a little</option>
+            </select>
+          </label>
+          <label class="set-vol">Catch card linger
+            <input id="set-linger" type="range" min="8" max="40" value="18" />
+          </label>
+          <div class="set-row">
+            <span>Larger type</span>
+            <button type="button" class="toggle" id="set-type" aria-label="Larger type"></button>
+          </div>
+          <div class="set-row">
+            <span>High contrast</span>
+            <button type="button" class="toggle" id="set-contrast" aria-label="High contrast"></button>
+          </div>
+          <div class="set-row">
+            <span>Quiet the radio in the desk</span>
+            <button type="button" class="toggle" id="set-pausedesk" aria-label="Pause music in desk"></button>
+          </div>
+        </section>
+        </div>
+      </aside>
+
+      <aside class="desk" id="desk" aria-label="Tackle desk">
+        <div class="desk-top">
+          <button type="button" class="primary-btn" id="btn-close-desk">Back to the dock</button>
+          <div class="desk-quick">
+            <button class="ghost-btn" id="btn-run" type="button">Run dock</button>
+            <button class="ghost-btn" id="btn-collect" type="button">Reel all</button>
+            <button class="ghost-btn" id="btn-sell" type="button">Sell creel</button>
+          </div>
+        </div>
+        <nav class="tabs" role="tablist">
+          <button type="button" class="tab on" data-tab="crew">Crew</button>
+          <button type="button" class="tab" data-tab="tackle">Tackle</button>
+          <button type="button" class="tab" data-tab="kitchen">Kitchen</button>
+          <button type="button" class="tab" data-tab="harbor">Harbor</button>
+          <button type="button" class="tab" data-tab="journal">Journal</button>
+          <button type="button" class="tab" data-tab="paragon">Paragon</button>
+          <button type="button" class="tab" data-tab="saves">Saves</button>
+        </nav>
+
+        <div id="tab-crew" class="tab-page">
+          <section class="card">
+            <header class="card-h">
+              <h2>Hired hands</h2>
+              <p>They work so you don't have to. You pay a wage; the monger pays it back when they sell. Crew keeps a 1–5% penny profit. Your own hands keep 4–20%.</p>
+            </header>
+            <div id="crew" class="crew"></div>
+            <button type="button" class="primary-btn crew-run" id="btn-run-desk">Run the whole dock once</button>
+            <p class="lesson" id="crew-lesson">Hand work pays 4–20% pennies on bait. Caster, reeler, and monger together keep 1–5% after wages. Always a little, never a loss.</p>
+          </section>
+        </div>
+
+        <div id="tab-tackle" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>What you're angling for</h2>
+              <p>You name a fish. The water answers with a table, not a promise. Bait, rod, tide, moon, and how well you know them all lean the roll.</p>
+            </header>
+            <div id="bait-cats" class="cats"></div>
+            <div id="baits" class="seed-row"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Bait tin</h2>
+              <p>Casts spend bait. The right smell makes the named fish more likely. The wrong smell still feeds someone.</p>
+            </header>
+            <div id="bait-inv" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Rod rack</h2>
+              <p>A heavier rod holds trophies. A kinder rod hurries the shy ones. The moon rod has opinions after dusk.</p>
+            </header>
+            <div id="rods" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Traps</h2>
+              <p>Pots and weirs work while you look the other way. They like the matching water.</p>
+            </header>
+            <div id="traps" class="barn"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Boat nook</h2>
+              <p>Friends who fish while you rest. Charters leave at dawn and come home with a story.</p>
+            </header>
+            <div id="boats" class="barn"></div>
+            <div id="charters" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Chandler's cart</h2>
+              <p>Line, hook, icehouse, and a little tide-magic.</p>
+            </header>
+            <div id="shop" class="shop"></div>
+          </section>
+        </div>
+
+        <div id="tab-kitchen" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Creel</h2>
+              <p>Tap a thing to sell one. Trophies keep their name in the book even after the pan.</p>
+            </header>
+            <div id="pantry" class="pantry"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Recipes</h2>
+              <p>Cooking turns patience into something warmer. A bigger kitchen unlocks the feast recipes.</p>
+            </header>
+            <div id="recipes" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Smokehouse</h2>
+              <p>Hang a fish. Come back when the rafters have finished the sentence.</p>
+            </header>
+            <div id="smokehouse" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Livewell</h2>
+              <p>A few fish stay. They pay rent in pearls, fry, and a quieter dock.</p>
+            </header>
+            <div id="livewell" class="shop"></div>
+          </section>
+        </div>
+
+        <div id="tab-harbor" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Neighbors</h2>
+              <p>Bring what they asked. Hearts open slowly. Five hearts unlock a real perk. Chat changes as they learn your step.</p>
+            </header>
+            <div id="village" class="village"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Harbor board</h2>
+              <p>Wren pins two kindnesses. They reset with the week. Filling one also writes your name kinder.</p>
+            </header>
+            <div id="orders" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Peddler's crate</h2>
+              <p>Every few days a crate arrives. It does not wait long.</p>
+            </header>
+            <div id="peddler" class="shop"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Dock goods</h2>
+              <p>Pretty things that quietly help. The bench is for sitting. The gull bath is for birds with opinions.</p>
+            </header>
+            <div id="decor-shop" class="shop"></div>
+          </section>
+        </div>
+
+        <div id="tab-journal" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Almanac</h2>
+              <p id="journal-sub">Favors are how the week says thank you. Spend them on weather, stock, luck, or hurry.</p>
+            </header>
+            <div id="almanac" class="journal"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Fish book</h2>
+              <p>First catch, biggest, the ones that got away. A fish is known only after it has introduced itself.</p>
+            </header>
+            <div id="encyclopedia" class="journal"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Trophy wall</h2>
+              <p>The biggest ones keep a nail on the shed.</p>
+            </header>
+            <div id="trophies" class="journal"></div>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Letters and dusk</h2>
+              <p>The harbor writes back, slowly.</p>
+            </header>
+            <div id="journal" class="journal"></div>
+          </section>
+        </div>
+
+        <div id="tab-paragon" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Paragon tree</h2>
+              <p>Fold a long harbor into stars. Spend them on gifts the next dock remembers. Prestige earns stars and restarts. Restart keeps the tree without new stars. Reset on Saves wipes the tree too.</p>
+            </header>
+            <div id="paragon"></div>
+          </section>
+        </div>
+
+        <div id="tab-saves" class="tab-page hidden">
+          <section class="card">
+            <header class="card-h">
+              <h2>Local harbors</h2>
+              <p>Each profile is a separate dock on this computer. Switching saves the one you’re in first. Reset wipes this harbor and its paragon tree. Prestige and restart live under Paragon.</p>
+            </header>
+            <div class="profile-new">
+              <input id="profile-name" type="text" maxlength="24" placeholder="Name a new harbor" />
+              <button type="button" class="buy-btn" id="btn-new-profile">New harbor</button>
+            </div>
+            <div id="profiles" class="profiles"></div>
+            <div class="profile-new">
+              <button type="button" class="buy-btn" id="btn-export">Download this harbor</button>
+              <label class="buy-btn import-lab">Load a harbor
+                <input id="import-save" type="file" accept="application/json,.json" hidden />
+              </label>
+            </div>
+            <button type="button" class="danger-btn" id="btn-reset">Reset this harbor</button>
+          </section>
+          <section class="card">
+            <header class="card-h">
+              <h2>Debug</h2>
+              <p>Cheats and tools for testing. They only touch the active profile.</p>
+            </header>
+            <div id="debug" class="debug"></div>
+          </section>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div id="boot-err" class="boot-err hidden" role="alert"></div>
+  <div id="fx" class="fx" aria-hidden="true"></div>
+  <div id="toast" class="toast hidden"></div>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div id="modal-portrait" class="modal-portrait hidden"></div>
+      <h2 id="modal-title"></h2>
+      <p id="modal-body"></p>
+      <div id="modal-actions" class="modal-actions">
+        <button type="button" id="modal-ok" class="primary-btn">Come ashore</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.onerror = function (msg, src, line) {
+      var el = document.getElementById("boot-err");
+      if (!el) return;
+      el.classList.remove("hidden");
+      el.textContent = "The harbor stumbled: " + msg + (line ? " (line " + line + ")" : "");
+    };
+  </script>
+  <script src="game.js"></script>
+</body>
+</html>
