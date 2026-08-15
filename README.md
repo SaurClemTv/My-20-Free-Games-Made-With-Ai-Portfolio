@@ -52,7 +52,7 @@ Each one was built as a complete mini-project so you can see real results.
 | 01 | Idle-Cozy-Farmer        | Idle / Farming / Cozy  | Available  | Relaxing farming idle game         |
 | 02 | Idle-Cozy-Fishing       | Idle / Fishing / Cozy  | Available  | Cozy fishing idle experience       |
 | 03 | Idle-Cozy-Rpg           | Idle / RPG / Cozy      | Available  | Idle RPG with cozy vibes           |
-| 04 | 3d Cozy Survival        | 3D Survival / Cozy     | Available  | Relaxed 3D survival gameplay       |
+| 04 | 3d Cozy Survival        | 3D Survival / Cozy     |unavailable | Relaxed 3D survival gameplay       |
 | 05 | Cozy-Platformer         | Platformer / Cozy      | Available  | Soft & atmospheric platformer      |
 | 06 | *Coming Soon*           | —                      | Planned    | —                                  |
 | 07 | *Coming Soon*           | —                      | Planned    | —                                  |
