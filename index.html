@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Cozy-Platformer</title>
+  <meta name="description" content="Cozy-Platformer — a cartoony meadow mile. Run, jump, and pop." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23E85D4C'/%3E%3Ccircle cx='32' cy='28' r='10' fill='%23F7D9A8'/%3E%3Crect x='22' y='36' width='20' height='16' rx='4' fill='%233D6B9A'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="stage">
+      <canvas id="game" width="1280" height="720" tabindex="0" aria-label="Cozy-Platformer"></canvas>
+
+      <header id="hud" hidden>
+        <div class="hud-hearts" id="hud-hearts" aria-label="Health"></div>
+        <div class="hud-stars" title="Stars collected">
+          <img src="assets/ui/star.png" alt="" class="hud-star-icon" />
+          <span id="hud-stars">0</span>
+        </div>
+        <div id="hud-board" class="hud-board" hidden>board</div>
+        <button type="button" id="hud-notes" class="hud-notes" title="Open journal">Journal 0</button>
+        <div class="hud-world" id="hud-world">Meadow Mile</div>
+      </header>
+
+      <nav id="chrome" class="chrome" aria-label="Cozy-Platformer menu">
+        <button type="button" id="btn-pause" class="icon-btn" hidden aria-label="Pause" title="Pause (Esc)">❚❚</button>
+        <button type="button" id="btn-mute" class="icon-btn" aria-label="Toggle sound" title="Sound">♪</button>
+        <button type="button" id="btn-guide" class="icon-btn" aria-label="Field Guide" title="Field Guide (G)">?</button>
+      </nav>
+
+      <div id="hint" class="hint" hidden>Arrows move · Space jump · mouse aims · click shoots · Esc pause · G guide</div>
+
+      <div id="overlay" class="overlay">
+        <div id="view-hub" class="menu-view">
+          <p class="kicker">cozy-platformer</p>
+          <h1>Cozy-Platformer</h1>
+          <p class="lead">Cozy-Platformer is Pip’s nature ranger run. Twelve habitats — meadow to aurora — each with real outdoor science in the signs.</p>
+          <div class="title-actions">
+            <button type="button" id="btn-play" class="play-btn">Play</button>
+            <button type="button" id="btn-maps" class="guide-btn">Maps</button>
+            <button type="button" id="btn-guide-title" class="guide-btn">Field Guide</button>
+          </div>
+          <p class="loadout" id="hub-loadout">Star Blaster · Meadow Mile</p>
+          <p class="keys">Enter to play · Maps to pick a habitat · G or ? for the Field Guide</p>
+        </div>
+
+        <div id="view-maps" class="menu-view" hidden>
+          <p class="kicker">cozy-platformer</p>
+          <h2>Map select</h2>
+          <p class="lead">Unlocked miles play on click. Locked miles need the previous flag.</p>
+          <div class="map-grid" id="map-grid"></div>
+          <button type="button" id="btn-maps-back" class="guide-btn">Back to Hub</button>
+        </div>
+
+        <div id="view-status" class="menu-view" hidden></div>
+      </div>
+
+      <aside id="guide" class="guide" hidden>
+        <header class="guide-head">
+          <div>
+            <p class="kicker">cozy-platformer</p>
+            <h2>Field Guide</h2>
+          </div>
+          <button type="button" id="guide-close" class="icon-btn" aria-label="Close guide">×</button>
+        </header>
+        <nav class="guide-tabs" role="tablist">
+          <button type="button" class="tab on" data-tab="moves">Moves</button>
+          <button type="button" class="tab" data-tab="critters">Critters</button>
+          <button type="button" class="tab" data-tab="blocks">Blocks</button>
+          <button type="button" class="tab" data-tab="loot">Collecting</button>
+          <button type="button" class="tab" data-tab="journal">Journal</button>
+        </nav>
+        <div class="guide-body">
+          <section class="guide-page" data-page="moves">
+            <article class="entry">
+              <div class="entry-ico move">↑</div>
+              <div>
+                <h3>Jump</h3>
+                <p class="stat">Space / W / ↑ · hold for a taller hop</p>
+                <p>Pip’s first hop. A short coyote window still lets you jump just after walking off a ledge.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico move">↑↑</div>
+              <div>
+                <h3>Double jump</h3>
+                <p class="stat">tap jump again in the air · one extra hop</p>
+                <p>Uses your air jump. Landing, a mushroom spring, or a stomp gives it back.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico move">↝</div>
+              <div>
+                <h3>Glide</h3>
+                <p class="stat">hold jump while falling · max fall is slowed</p>
+                <p>After the hop peaks, keep holding Space to float. Great for wide pits. Works on or off the skateboard (the board is a bit heavier).</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico move">🛹</div>
+              <div>
+                <h3>Skateboard</h3>
+                <p class="stat">touch the board to pick it up · S or ↓ to hop on/off</p>
+                <p>Ride for extra speed and a long slide. You can still jump, double jump, glide, and shoot. Getting hit knocks you off — you keep the board. Falling in a pit still ends the run.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico move">✦</div>
+              <div>
+                <h3>Star blaster</h3>
+                <p class="stat">aim with the mouse · click or J / K / X / Z · 1 damage</p>
+                <p>Every gun in Cozy-Platformer fires toward the cursor — the Star Blaster is the one you have now. Unlimited pellets. Sproutlings take 2 hits. Puff-bats take 1. Pellets pop on walls.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico move">↓</div>
+              <div>
+                <h3>Stomp</h3>
+                <p class="stat">land on a critter’s head · bounce + air jump refill</p>
+                <p>Works on both meadow pests. Safer than a hug. Touching them from the side costs 1 heart.</p>
+              </div>
+            </article>
+          </section>
+
+          <section class="guide-page" data-page="critters" hidden>
+            <article class="entry">
+              <img class="entry-art" src="assets/enemies/sprout.png" alt="Sproutling" />
+              <div>
+                <h3>Sproutling</h3>
+                <p class="stat">HP 2 · contact 1 heart · stomp: yes · shots: 2</p>
+                <p>A grumpy walking turnip. Patrols flat ground and turns around at ledges and walls. Does not jump or shoot. Best dealt with a stomp or two pellets.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <img class="entry-art" src="assets/enemies/puff.png" alt="Puff-bat" />
+              <div>
+                <h3>Puff-bat</h3>
+                <p class="stat">HP 1 · contact 1 heart · stomp: yes · shots: 1</p>
+                <p>A cream puff with wings. Hovers in a slow sine wave and drifts back and forth. Soft, but still costs a heart if you walk into it. One pellet or one stomp pops it.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico move">💧</div>
+              <div>
+                <h3>Dewdrop</h3>
+                <p class="stat">HP 1 · contact 1 heart · Brook Bend</p>
+                <p>A hovering water puff. Real dew forms when night air cools and water vapor condenses on leaves. One pellet or a stomp pops it.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico move">🍃</div>
+              <div>
+                <h3>Leaf-mite</h3>
+                <p class="stat">HP 2 · contact 1 heart · faster patrol · Canopy Climb</p>
+                <p>A speedy leaf critter. Real mites and springtails help shred fallen leaves so nutrients go back into the soil. Two shots or a stomp.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico move">↑</div>
+              <div>
+                <h3>Sand-hopper</h3>
+                <p class="stat">HP 2 · hops · Dune Drift</p>
+                <p>A bouncing desert pest. Real desert locusts and kangaroo rats save energy with hops. Two shots or a stomp — watch the jump.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico move">🦀</div>
+              <div>
+                <h3>Pebble crab</h3>
+                <p class="stat">HP 2 · contact 1 heart · Tide Pool</p>
+                <p>Side-scuttles the rocks. Real shore crabs hide in tide pools at low tide and come out to graze algae when the sea returns.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico move">🌙</div>
+              <div>
+                <h3>Orchard moth</h3>
+                <p class="stat">HP 1 · flies · Night Orchard</p>
+                <p>A night pollinator puff. Many moths find pale flowers by scent. One pellet or a stomp. Please imagine it as a pest stand-in, not a real moth to squash.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico move">🦇</div>
+              <div>
+                <h3>Cave bat</h3>
+                <p class="stat">HP 1 · flies in the dark · Cave Glow</p>
+                <p>A click-and-listen flyer. Real bats use echolocation — they shout tiny sounds and steer by the echo. One pellet or a stomp.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico move">⚡</div>
+              <div>
+                <h3>Storm spark</h3>
+                <p class="stat">HP 1 · Prairie Storm</p>
+                <p>A charged puff that hangs in the gusts. Real lightning is a giant spark; thunder is the air slamming shut after it.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico move">🫧</div>
+              <div>
+                <h3>Peat spore</h3>
+                <p class="stat">HP 1 · drifts · Bog Lantern</p>
+                <p>A slow moss puff. Real peatlands hold half-rotted plants for thousands of years because the water is too sour and cold for full decay.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico move">🔥</div>
+              <div>
+                <h3>Ember hopper</h3>
+                <p class="stat">HP 2 · hops · Volcano Rim</p>
+                <p>A hot bounce on new rock. Real lava is melted stone; once it cools it can become the soil of a future garden. Do not stand in the orange.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico move">✦</div>
+              <div>
+                <h3>Aurora wisp</h3>
+                <p class="stat">HP 1 · flies · Aurora Ridge</p>
+                <p>A charged night puff. Real auroras are gases glowing after the solar wind hits Earth’s magnetic shield — not fire in the sky.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <img class="entry-art" src="assets/player/idle.png" alt="Pip" />
+              <div>
+                <h3>Pip (you)</h3>
+                <p class="stat">HP 3 hearts · pellet 1 dmg · fall = instant out</p>
+                <p>Beanie ranger of Meadow Mile. Hearts only drop when a critter bumps you (not from stomps). Falling into a pit or off the map is a full knockout — no checkpoint save.</p>
+              </div>
+            </article>
+          </section>
+
+          <section class="guide-page" data-page="blocks" hidden>
+            <article class="entry">
+              <div class="entry-ico tile grass"></div>
+              <div>
+                <h3>Grass &amp; dirt</h3>
+                <p class="stat">solid ground · cannot collect</p>
+                <p>The meadow floor. Stand on it. Dirt under grass is just filler. Walking off it into empty air is a pit.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico tile brick"></div>
+              <div>
+                <h3>Brick</h3>
+                <p class="stat">solid · bump from below to smash</p>
+                <p>Jump up into a brick from underneath to break it. You do not pick bricks up. Useful for opening a path or reaching a star above.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico tile honey"></div>
+              <div>
+                <h3>Honey block</h3>
+                <p class="stat">solid · bump from below → star · then becomes used</p>
+                <p>The gold block with a star stamp. Hit it with your head. A star pops out and you collect it. After that it turns brown and stays put — empty, still solid.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico tile wood"></div>
+              <div>
+                <h3>Wood ledge</h3>
+                <p class="stat">one-way platform · jump up through it</p>
+                <p>Land on it from above. You can hop up through it from below. Some of them slide (the moving island over the late pit).</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico tile" style="background:#e0c07a"></div>
+              <div>
+                <h3>Sand</h3>
+                <p class="stat">solid · extra slide · Dune Drift</p>
+                <p>Sand grains are leftover rock. You can stand on it, but it is slippery. Wind above the dunes will also push you.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico tile" style="background:#5a4030"></div>
+              <div>
+                <h3>Mud</h3>
+                <p class="stat">solid · slow and sticky · Bog Lantern</p>
+                <p>Waterlogged peat. You can walk it, but it grabs your boots. Real bogs stay wet because sphagnum moss holds water like a sponge.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico tile" style="background:#c43c14"></div>
+              <div>
+                <h3>Lava</h3>
+                <p class="stat">instant out · Volcano Rim</p>
+                <p>Melted rock. Touching it ends the run. Hop the cooled stone. When lava hardens it writes brand-new land.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico tile" style="background:#b8dcf0"></div>
+              <div>
+                <h3>Ice</h3>
+                <p class="stat">solid · very slippery · Alpine Pass</p>
+                <p>Packed snow that froze again. You can stand on it, but friction is tiny — skate or take short steps. Real glaciers are rivers of this ice.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico tile" style="background:#3f7a32"></div>
+              <div>
+                <h3>Cactus</h3>
+                <p class="stat">hurts on touch · not collectible</p>
+                <p>A water-saving plant with a waxy skin and spines. In Cozy-Platformer the spines cost a heart. Hop over; do not hug.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico tile tube"></div>
+              <div>
+                <h3>Garden tube</h3>
+                <p class="stat">solid obstacle · cannot enter</p>
+                <p>Terracotta chimneys. Walk around or hop over. They do not warp anywhere in this mile.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico tile spring"></div>
+              <div>
+                <h3>Mushroom spring</h3>
+                <p class="stat">land on it · big bounce · refills air jump</p>
+                <p>Pink cap, cream spots. Step on it to launch. Hold jump after the bounce if you want to glide the extra height.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico tile flag"></div>
+              <div>
+                <h3>Garden flag</h3>
+                <p class="stat">touch to clear the mile</p>
+                <p>The finish of every habitat. Walk into the red banner to stamp your journal and open the next map.</p>
+              </div>
+            </article>
+          </section>
+
+          <section class="guide-page" data-page="loot" hidden>
+            <article class="entry">
+              <img class="entry-art" src="assets/ui/star.png" alt="Star token" />
+              <div>
+                <h3>Stars</h3>
+                <p class="stat">touch to collect · also pop from honey blocks</p>
+                <p>Floating honey-gold tokens. Walk or jump into them. Bumping a honey block from below spits one out and you grab it automatically. They are the mile’s score — they are not spent on anything yet.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <img class="entry-art" src="assets/ui/heart.png" alt="Heart" />
+              <div>
+                <h3>Hearts</h3>
+                <p class="stat">3 max · lost on critter contact · not collected in the mile</p>
+                <p>Shown in the top-left. You start with a full set. There is no heart pickup on Meadow Mile — play carefully. A pit fall ignores leftover hearts and ends the run.</p>
+              </div>
+            </article>
+            <article class="entry">
+              <div class="entry-ico move">🛹</div>
+              <div>
+                <h3>Skateboard pickup</h3>
+                <p class="stat">touch the parked board · then S / ↓ to ride</p>
+                <p>One sits near the start of the mile, another later on the high garden. Touch it once to keep it for the rest of the run. It is not a block and cannot be stored in a bag — you just own it.</p>
+              </div>
+            </article>
+          </section>
+
+          <section class="guide-page" data-page="journal" hidden>
+            <p class="journal-intro">Walk into wooden ranger signs and floating notes. Facts you find stay here — a living Field Guide for Cozy-Platformer.</p>
+            <div id="journal-list"></div>
+          </section>
+        </div>
+      </aside>
+
+      <aside id="toast" class="toast" hidden>
+        <button type="button" id="toast-close" class="toast-close" aria-label="Dismiss note">×</button>
+        <p class="toast-kicker" id="toast-kicker">Ranger note</p>
+        <h3 id="toast-title"></h3>
+        <p id="toast-body"></p>
+      </aside>
+    </div>
+  </div>
+  <script src="game.js"></script>
+</body>
+</html>
