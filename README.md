@@ -59,3 +59,74 @@ Modern platformer juice on a classic stage shape:
 ## Project
 
 Standalone git worktree at `C:\Users\justi\Cozy-Platformer` (its own repo, not the home-folder git).
+
+
+
+
+
+# Cozy-Platformer
+
+**A complete example project from Justin Sauriol’s AI Game Portfolio**
+
+This folder contains **all the files** needed for the Cozy-Platformer game.
+
+It is provided as a working **example** so that anyone — developers, designers, or hobbyists — can open it, explore how it was built, and easily put the game together themselves.
+
+---
+
+## What’s Included
+
+Everything required to run and study the game is right here:
+
+- Game source files / scripts
+- Visual assets (sprites, tiles, UI elements, etc.)
+- Audio files (sound effects & music)
+- Project structure and organization
+- Any configuration or scene files used
+
+You do **not** need extra assets. Everything is self-contained in this folder.
+
+---
+
+## Purpose of This Example
+
+This is **not** a polished commercial release.  
+It is a **proof-of-work / learning example** from my portfolio of 20 free AI-assisted games.
+
+You are free to:
+
+- Open and inspect every file
+- Use the assets and structure to rebuild or modify the game
+- Learn from the organization and design choices
+- Experiment and create your own variations
+
+Any developer with basic knowledge of the relevant engine/tools should be able to put this project together without difficulty.
+
+---
+
+## How to Use
+
+1. Download or clone this folder
+2. Open the project in your preferred game engine / editor
+3. Follow the existing folder structure
+4. Build / play the game
+
+That’s it.
+
+---
+
+## Credits
+
+Created by **Justin Sauriol**  
+GitHub: [SaurClemTv](https://github.com/SaurClemTv)  
+Fiverr: [Justin S (@justinsaur)](https://www.fiverr.com/justinsaur)
+
+Part of the larger portfolio:  
+**[My 20 Free Games Made With AI Portfolio](https://github.com/SaurClemTv/My-20-Free-Games-Made-With-Ai-Portfolio)**
+
+---
+
+## License
+
+You may freely use, study, modify, and learn from the files in this example.  
+Attribution is appreciated but not required.
